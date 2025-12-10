@@ -1,0 +1,41 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Ubuntu 14.04
+#
+# This is for updating the base precise32 box and repackage
+#
+box       = "ubuntu/trusty64"
+#box_url   = "http://cdn.jlwestsr.com/vagrant/boxes/precise32-base-20140221.box"
+hostname  = "vagrant-docker-lamp"
+domain    = "example.com" 
+ip        = "192.168.0.40" # random ip address
+ram       = "2048" # adjust as needed
+cpus      = "2" #CPUs 
+
+Vagrant.configure(2) do |config|
+  config.vm.box         = box
+  #config.vm.box_url     = box_url
+  config.vm.host_name   = hostname + '.' + domain
+  config.vm.network :private_network, ip: ip
+
+  config.vm.provider :virtualbox do |vb|
+    vb.memory = ram
+    vb.cpus = cpus
+    vb.customize [
+      "modifyvm", :id, 
+      "--name", hostname,
+    ]
+  end
+
+  # Vagrant-Cachier
+  if Vagrant.has_plugin?("vagrant-cachier")
+    # Configure cached packages to be shared between instances of the same base box.
+    # More info on http://fgrehm.viewdocs.io/vagrant-cachier/usage
+    config.cache.scope = :machine
+  end
+
+  # Run the bootstrap.sh script to update VM
+  config.vm.provision :shell, path: "bootstrap.sh" 
+  
+end

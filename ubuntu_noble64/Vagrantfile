@@ -1,0 +1,43 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  
+  config.vm.define "box" do |box|
+    box.vm.box = "cloud-image/ubuntu-24.04"
+    box.vm.hostname = "ubuntu-24.04"
+  end
+  
+  # Set VM resources
+  config.vm.provider :virtualbox do |vb|
+    vb.memory = 4096
+    vb.cpus = 2
+    vb.name = "Ubuntu_24.04"
+  end
+
+  # Provisioning script to update and install essential packages
+  config.vm.provision "shell", inline: <<-SHELL
+    #!/bin/bash
+    set -e
+    
+    # Update and upgrade packages
+    sudo apt-get update 
+    sudo apt-get upgrade -y 
+    sudo apt-get autoremove -y 
+    sudo apt-get autoclean -y
+     
+    # Install essential packages
+    sudo apt-get install -y build-essential git curl wget vim zsh
+
+  SHELL
+
+  config.vm.provision :shell, privileged: false, inline: <<-SCRIPT
+    # Install Oh My Zsh for a better shell experience
+    if [ ! -d "/home/vagrant/.oh-my-zsh" ]; then
+      sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    fi
+  SCRIPT
+  
+  # Change the 'vagrant' user's default shell to Zsh (requires root privileges)
+  config.vm.provision :shell, inline: "chsh -s $(which zsh) vagrant"
+end

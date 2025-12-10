@@ -1,0 +1,30 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Inline shell commands example
+$script = <<SCRIPT
+# Add shell commands here
+uname -r
+SCRIPT
+
+Vagrant.configure(2) do |config|
+	config.vm.box = "boxcutter/centos71"
+	
+	# Run the bootstrap.sh script to update VM
+	config.vm.provision :shell, path: "bootstrap.sh"
+
+	# Run inline shell script
+	config.vm.provision :shell, inline: $script
+
+	# Vagrant-Cachier - https://github.com/fgrehm/vagrant-cachier
+	if Vagrant.has_plugin?("vagrant-cachier")
+		config.cache.scope = :box
+		config.cache.auto_detect = false
+	end
+
+	# Vagrant-VBGuest - https://github.com/dotless-de/vagrant-vbguest
+	if Vagrant.has_plugin?("vagrant-vbguest")
+		config.vbguest.auto_update = false
+	end
+
+end

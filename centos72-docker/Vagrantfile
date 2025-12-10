@@ -1,0 +1,40 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+box       = "centos-72-base"
+hostname  = "centos72-docker"
+domain    = "example.com"
+ip        = "192.168.0.10" # Random IP Address
+ram       = "2048" # Adjust as needed
+cpus      = "2" # CPUs
+
+Vagrant.configure("2") do |config|
+  config.vm.box       = box
+  config.vm.host_name = hostname + '.' + domain
+  config.vm.network :private_network, ip: ip
+  
+  config.ssh.insert_key = false
+
+  config.vm.provider :virtualbox do |vb|
+    vb.memory = ram
+    vb.cpus = cpus
+    vb.customize [
+      "modifyvm", :id,
+      "--name", hostname,
+    ]
+  end
+  
+  # Run the bootstrap.sh script
+  config.vm.provision :shell, path: "scripts/bootstrap.sh"
+  
+  # Vagrant-Cachier - 
+  if Vagrant.has_plugin?("vagrant-cachier")
+    config.cache.scope = :box
+    config.cache.auto_detect = false
+  end
+
+  # Vagrant-VBGuest - 
+  if Vagrant.has_plugin?("vagrant-vbguest")
+    config.vbguest.auto_update = false
+  end
+end

@@ -1,0 +1,32 @@
+---
+- name: Deploy TiDB Cluster
+  hosts: tidb_nodes
+  become: yes
+  tasks:
+    - name: Install required packages
+      apt:
+        name:
+          - curl
+          - wget
+          - tar
+          - unzip
+        state: present
+        update_cache: yes
+
+    - name: Install TiUP
+      shell: |
+        curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh
+      args:
+        executable: /bin/bash
+
+#    - name: Add TiUP to PATH
+#      shell: |
+#        source ~/.profile
+#      args:
+#        executable: /bin/bash
+
+#    - name: Initialize TiDB cluster
+#      shell: |
+#        /root/.tiup/bin/tiup playground --db 1 --pd 1 --kv 1
+#      args:
+#        executable: /bin/bash

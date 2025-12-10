@@ -1,0 +1,19 @@
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ]; then
+  PATH=$HOME/bin:$PATH
+fi
+
+# Set and Export paths
+export EDITOR="vim"
+
+# JDK 1.7
+# export JAVA_HOME="/opt/jdk1.7.0"
+# export JDK_HOME=$JAVA_HOME
+
+# RBENV
+# export RBENV_HOME="$HOME/.rbenv"
+
+# export JRUBY_OPTS='--1.9'
+
+# Export PATH
+# export PATH=$JAVA_HOME/bin:$RBENV_HOME/bin:$PATH

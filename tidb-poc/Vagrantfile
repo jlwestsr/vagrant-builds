@@ -1,0 +1,24 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile
+Vagrant.configure("2") do |config|
+  # Define a TiDB cluster with 3 nodes
+  (1..1).each do |i|
+    config.vm.define "tidb-node-#{i}" do |node|
+      config.vm.box = "ubuntu/jammy64"
+      
+      # SSH KEY
+      config.ssh.insert_key = false
+      # Enable ssh forward agent
+      config.ssh.forward_agent = true
+      
+      node.vm.hostname = "tidb-node-#{i}"
+      node.vm.network "private_network", ip: "192.168.56.1#{i}"
+      node.vm.provider "virtualbox" do |vb|
+        vb.memory = "4096"
+        vb.cpus = 2
+      end
+    end
+  end
+end

@@ -1,0 +1,50 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+box       = "centos/7"
+hostname  = "centos7-base"
+domain    = "example.com"
+ip        = "10.33.130.61" # Random IP Address
+ram       = "4096" # Adjust as needed 2G = "2048", 4G = "4096"
+cpus      = "2" # CPUs
+
+Vagrant.configure(2) do |config|
+
+  config.vm.box       = box
+  config.vm.host_name = hostname + '.' + domain
+  #config.vm.network :private_network, ip: ip
+  config.vm.network :public_network
+
+  config.ssh.insert_key = false
+  
+  config.vm.synced_folder ".", "/vagrant", type: "rsync", 
+    rsync__auto: true,
+    rsync__exclude: ".git/"
+
+  config.vm.provider :virtualbox do |vb|
+    vb.name = hostname
+    vb.memory = ram
+    vb.cpus = cpus
+  end
+
+  config.vm.provider :hyperv do |h|
+    h.vmname = hostname
+    h.memory = ram
+    h.cpus = cpus
+    h.ip_address_timeout = 180 # Because my machine is sloooowwwww...
+  end
+
+  # Run the bootstrap.sh script
+  config.vm.provision :shell, path: "bootstrap.sh"
+
+  # Vagrant-Cachier -
+  if Vagrant.has_plugin?("vagrant-cachier")
+    config.cache.scope = :box
+    config.cache.auto_detect = false
+  end
+
+  # Vagrant-VBGuest -
+  if Vagrant.has_plugin?("vagrant-vbguest")
+    config.vbguest.auto_update = false
+  end
+end
